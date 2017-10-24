@@ -17,3 +17,7 @@ Later I will put inside some skeleton implementations of PathPlanner interface, 
 ##Prerequisites
 Use those from the original starter project.
 
+##TODO
+1. Clean up HighwayMap class
+2. Enforce consistent code-style
+
