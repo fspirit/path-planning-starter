@@ -14,10 +14,10 @@ Later I will put inside some skeleton implementations of PathPlanner interface, 
 1. Clean code, SOLID
 2. Reasonable usage of modern C++ 
 
-##Prerequisites
+## Prerequisites
 Use those from the original starter project.
 
-##TODO
+## TODO
 1. Clean up HighwayMap class
 2. Enforce consistent code-style
 
