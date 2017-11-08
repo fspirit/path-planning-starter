@@ -3,6 +3,7 @@
 //
 
 #include <vector>
+#include <iostream>
 
 #include "SimpleSplineBasedPlanner.h"
 
@@ -17,9 +18,6 @@ const double SimulatorRunloopPeriod = 0.02;
 static const int MaxNumberOfPointsInPath = 50;
 const int LeftmostLaneNumber = 0;
 
-// TODO:
-// 1 Доделать перестроение с currentLane и прочим
-
 std::vector<CartesianPoint> SimpleSplineBasedPlanner::GeneratePath(PathPlannerInput input)
 {
     if (IsTooCloseToOtherCar(input))
@@ -28,7 +26,9 @@ std::vector<CartesianPoint> SimpleSplineBasedPlanner::GeneratePath(PathPlannerIn
         targetLane = LeftmostLaneNumber;
     }
     else if (targetSpeed < MaxSpeed)
+    {
         targetSpeed += DefaultAcceleration;
+    }
 
     auto anchorsGenerationResult = GenerateAnchorPoints(input);
     auto anchorsLocal = ConvertPointsToLocalSystem(anchorsGenerationResult.AnchorPoints, anchorsGenerationResult.ReferencePoint);
@@ -52,7 +52,7 @@ bool SimpleSplineBasedPlanner::IsTooCloseToOtherCar(const PathPlannerInput &inpu
         if (otherCar.IsInLane(targetLane))
         {
             double otherCarPredictedS = otherCar.LocationFrenet.S +
-                                        (input.Path.size() * SimulatorRunloopPeriod * otherCar.Speed2DMagnitude());
+                                        (input.Path.size() * SimulatorRunloopPeriod * otherCar.Speed2DMagnitude() * 0.447);
             if (otherCarPredictedS > egoPredictedEndpointS &&
                     (otherCarPredictedS - egoPredictedEndpointS) < CriticalThresholdInMeters)
                 return true;
@@ -78,7 +78,8 @@ SimpleSplineBasedPlanner::AnchorPointsGenerationResult SimpleSplineBasedPlanner:
     {
         referencePoint = input.Path.back();
         auto prevPoint = input.Path[input.Path.size() - 2];
-        prevPoint.Theta = atan2(referencePoint.Y - prevPoint.Y, referencePoint.X - prevPoint.X);
+        
+        referencePoint.Theta = atan2(referencePoint.Y - prevPoint.Y, referencePoint.X - prevPoint.X);
 
         anchors.push_back(prevPoint);
         anchors.push_back(referencePoint);
